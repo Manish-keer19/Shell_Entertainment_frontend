@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 100% 15%;
+
+    --card: 0 0% 98%;
+    --card-foreground: 220 100% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 100% 15%;
+
+    --primary: 220 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 20% 95%;
+    --secondary-foreground: 220 100% 15%;
+
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 30% 40%;
+
+    --accent: 210 100% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 85%;
+    --input: 220 15% 92%;
+    --ring: 220 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Custom Shell Entertainment tokens - Blue Theme */
+    --blue: 220 100% 50%;
+    --blue-light: 210 100% 60%;
+    --blue-dark: 230 100% 40%;
+    --shell-light: 0 0% 100%;
+    --shell-lighter: 0 0% 98%;
+    
+    /* Gradients - Blue Theme */
+    --gradient-blue: linear-gradient(135deg, hsl(220 100% 50%), hsl(210 100% 60%));
+    --gradient-light: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 20% 95%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(220 20% 95%) 100%);
+    
+    /* Shadows - Blue Theme */
+    --shadow-blue: 0 0 30px hsl(220 100% 50% / 0.3);
+    --shadow-glow: 0 0 60px hsl(220 100% 50% / 0.2);
+    --shadow-card: 0 10px 40px hsl(220 100% 15% / 0.1);
+    
+    /* Animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 220 20% 95%;
+
+    --card: 220 25% 12%;
+    --card-foreground: 220 20% 95%;
+
+    --popover: 220 30% 10%;
+    --popover-foreground: 220 20% 95%;
+
+    --primary: 220 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 20% 15%;
+    --secondary-foreground: 220 20% 95%;
+
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 15% 65%;
+
+    --accent: 210 100% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --border: 220 15% 25%;
+    --input: 220 15% 18%;
+    --ring: 220 100% 60%;
+
+    --shadow-blue: 0 0 30px hsl(220 100% 60% / 0.3);
+    --shadow-glow: 0 0 60px hsl(220 100% 60% / 0.2);
+    --shadow-card: 0 10px 40px hsl(220 30% 5% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
