@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,14 +14,15 @@ import Navbar from '@/components/Navbar';
 import { courseService } from '@/service/course.service';
 import { useAppSelector } from '@/hooks/redux';
 
-const CreateCourse = () => {
+const EditCourse = () => {
   const navigate = useNavigate();
+  const { courseId } = useParams();
   const { toast } = useToast();
   const { token } = useAppSelector((state) => state.auth);
 
   const [currentStage, setCurrentStage] = useState(1);
-  const [createdCourseId, setCreatedCourseId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCourse, setIsLoadingCourse] = useState(true);
   const [categories, setCategories] = useState([]);
 
   // Stage 1: Course Data
@@ -34,8 +35,14 @@ const CreateCourse = () => {
     thumbnailImage: '',
     tags: [],
     category: '',
-    instructions: []
+    instructions: [],
+    status: 'Draft'
   });
+
+  // Track original data for change detection
+  const [originalCourseData, setOriginalCourseData] = useState({});
+  const [originalSections, setOriginalSections] = useState([]);
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Stage 2: Sections and Subsections
   const [sections, setSections] = useState([]);
@@ -47,12 +54,62 @@ const CreateCourse = () => {
     videoPreview: ''
   });
 
-  // Stage 3: Final Status
-  const [finalStatus, setFinalStatus] = useState('Draft');
-
   // Helper states
   const [currentTag, setCurrentTag] = useState('');
   const [currentInstruction, setCurrentInstruction] = useState('');
+
+  // Fetch course details
+  const fetchCourseDetails = async () => {
+    if (!courseId || !token) return;
+    try {
+      setIsLoadingCourse(true);
+      const res = await courseService.getFullCourseDetails(courseId, token);
+      const course = res.data.courseDetails;
+      
+      const courseDataObj = {
+        courseName: course.courseName || '',
+        courseDescription: course.courseDescription || '',
+        whatYouWillLearn: course.whatYouWillLearn || '',
+        price: course.price || '',
+        thumbnail: null,
+        thumbnailImage: course.thumbnail || '',
+        tags: course.tag || [],
+        category: course.category?._id || '',
+        instructions: course.instructions || [],
+        status: course.status || 'Draft'
+      };
+      
+      setCourseData(courseDataObj);
+      setOriginalCourseData(courseDataObj);
+
+      // Convert existing sections to editable format
+      const existingSections = course.courseContent?.map(section => ({
+        sectionName: section.sectionName,
+        sectionId: section._id,
+        isCreated: true,
+        subSections: section.subSection?.map(sub => ({
+          title: sub.title,
+          description: sub.description,
+          videoFile: null,
+          videoPreview: sub.videoUrl,
+          subSectionId: sub._id,
+          isCreated: true
+        })) || []
+      })) || [];
+      
+      setSections(existingSections);
+      setOriginalSections(JSON.parse(JSON.stringify(existingSections)));
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch course details",
+        variant: "destructive"
+      });
+      navigate('/manage-courses');
+    } finally {
+      setIsLoadingCourse(false);
+    }
+  };
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -66,8 +123,9 @@ const CreateCourse = () => {
   };
 
   useEffect(() => {
+    fetchCourseDetails();
     fetchCategories();
-  }, [token]);
+  }, [courseId, token]);
 
   // Stage 1 Handlers
   const handleCourseInputChange = (e) => {
@@ -111,10 +169,41 @@ const CreateCourse = () => {
     }));
   };
 
-  // Stage 1: Create Course
+  // Check if course data has changed
+  const hasCourseDataChanged = () => {
+    return JSON.stringify({
+      courseName: courseData.courseName,
+      courseDescription: courseData.courseDescription,
+      whatYouWillLearn: courseData.whatYouWillLearn,
+      price: courseData.price,
+      category: courseData.category,
+      tags: courseData.tags,
+      instructions: courseData.instructions
+    }) !== JSON.stringify({
+      courseName: originalCourseData.courseName,
+      courseDescription: originalCourseData.courseDescription,
+      whatYouWillLearn: originalCourseData.whatYouWillLearn,
+      price: originalCourseData.price,
+      category: originalCourseData.category,
+      tags: originalCourseData.tags,
+      instructions: originalCourseData.instructions
+    }) || courseData.thumbnail !== null;
+  };
+
+  // Stage 1: Update Course
   const handleStage1Submit = async () => {
     if (!courseData.courseName || !courseData.price || courseData.tags.length === 0) {
       toast({ title: "Incomplete form", description: "Please fill required fields.", variant: "destructive" });
+      return;
+    }
+
+    // Check if there are changes
+    if (!hasCourseDataChanged()) {
+      toast({
+        title: "No Changes Detected",
+        description: "Moving to next stage without updating."
+      });
+      setCurrentStage(2);
       return;
     }
 
@@ -122,12 +211,12 @@ const CreateCourse = () => {
       setIsLoading(true);
       
       const formData = new FormData();
+      formData.append('courseId', courseId);
       formData.append('courseName', courseData.courseName);
       formData.append('courseDescription', courseData.courseDescription);
       formData.append('whatYouWillLearn', courseData.whatYouWillLearn);
       formData.append('price', courseData.price);
       formData.append('category', courseData.category);
-      formData.append('status', 'Draft');
       formData.append('tag', JSON.stringify(courseData.tags));
       formData.append('instructions', JSON.stringify(courseData.instructions));
       
@@ -135,19 +224,18 @@ const CreateCourse = () => {
         formData.append('thumbnailImage', courseData.thumbnail);
       }
       
-      const courseRes = await courseService.createCourse(formData, token);
-      setCreatedCourseId(courseRes.data._id);
+      await courseService.editCourse(formData, token);
       
       toast({
-        title: "Course Created Successfully!",
-        description: "Now let's add sections and lessons to your course."
+        title: "Course Updated Successfully!",
+        description: "Now you can manage sections and lessons."
       });
       
       setCurrentStage(2);
     } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to create course",
+        description: error.response?.data?.message || "Failed to update course",
         variant: "destructive"
       });
     } finally {
@@ -156,20 +244,62 @@ const CreateCourse = () => {
   };
 
   // Stage 2 Handlers
-  const addSection = () => {
-    if (currentSectionName.trim()) {
+  const addSection = async () => {
+    if (!currentSectionName.trim()) return;
+    
+    try {
+      setIsLoading(true);
+      const sectionRes = await courseService.createSection({
+        sectionName: currentSectionName.trim(),
+        courseId: courseId
+      }, token);
+      
+      const newSectionId = sectionRes.updatedCourse.courseContent[sectionRes.updatedCourse.courseContent.length - 1]._id || sectionRes.updatedCourse.courseContent[sectionRes.updatedCourse.courseContent.length - 1];
+      
       setSections(prev => [...prev, {
         sectionName: currentSectionName.trim(),
-        subSections: [],
-        isCreated: false,
-        sectionId: null
+        sectionId: newSectionId,
+        isCreated: true,
+        subSections: []
       }]);
+      
       setCurrentSectionName('');
+      toast({ title: "Section added successfully!" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add section",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const removeSection = (index) => {
-    setSections(prev => prev.filter((_, i) => i !== index));
+  const removeSection = async (index) => {
+    const section = sections[index];
+    if (section.isCreated && section.sectionId) {
+      try {
+        setIsLoading(true);
+        await courseService.deleteSection({
+          sectionId: section.sectionId,
+          courseId: courseId
+        }, token);
+        
+        setSections(prev => prev.filter((_, i) => i !== index));
+        toast({ title: "Section deleted successfully!" });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete section",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setSections(prev => prev.filter((_, i) => i !== index));
+    }
   };
 
   const handleVideoChange = (e) => {
@@ -180,76 +310,36 @@ const CreateCourse = () => {
     }
   };
 
-  const addSubSection = (sectionIndex) => {
-    if (currentSubSection.title.trim() && currentSubSection.videoFile) {
-      setSections(prev => prev.map((section, idx) =>
-        idx === sectionIndex
-          ? { ...section, subSections: [...section.subSections, { ...currentSubSection }] }
-          : section
-      ));
-      setCurrentSubSection({ title: '', description: '', videoFile: null, videoPreview: '' });
-    }
-  };
-
-  const removeSubSection = (sectionIndex, subIndex) => {
-    setSections(prev => prev.map((section, idx) =>
-      idx === sectionIndex
-        ? { ...section, subSections: section.subSections.filter((_, i) => i !== subIndex) }
-        : section
-    ));
-  };
-
-  // Stage 2: Create Sections and Subsections
-  const handleStage2Submit = async () => {
-    if (sections.length === 0) {
-      toast({ title: "No sections", description: "Please add at least one section.", variant: "destructive" });
-      return;
-    }
-
+  const addSubSection = async (sectionIndex) => {
+    if (!currentSubSection.title.trim() || !currentSubSection.videoFile) return;
+    
+    const section = sections[sectionIndex];
+    if (!section.sectionId) return;
+    
     try {
       setIsLoading(true);
+      const subSectionData = new FormData();
+      // console.log("section ",section);
+      subSectionData.append('sectionId', section.sectionId);
+      subSectionData.append('title', currentSubSection.title);
+      subSectionData.append('description', currentSubSection.description);
+      subSectionData.append('courseId', courseId);
+      subSectionData.append('videoFile', currentSubSection.videoFile);
       
-      for (let i = 0; i < sections.length; i++) {
-        const section = sections[i];
-        
-        // Create section
-        const sectionRes = await courseService.createSection({
-          sectionName: section.sectionName,
-          courseId: createdCourseId
-        }, token);
-        
-        const sectionId = sectionRes.updatedCourse.courseContent[sectionRes.updatedCourse.courseContent.length - 1]._id || sectionRes.updatedCourse.courseContent[sectionRes.updatedCourse.courseContent.length - 1];
-        
-        // Update section with ID
-        setSections(prev => prev.map((s, idx) => 
-          idx === i ? { ...s, isCreated: true, sectionId } : s
-        ));
-        
-        // Create subsections
-        for (const subSection of section.subSections) {
-          if (subSection.title.trim() && subSection.videoFile) {
-            const subSectionData = new FormData();
-            subSectionData.append('sectionId', sectionId);
-            subSectionData.append('title', subSection.title);
-            subSectionData.append('description', subSection.description);
-            subSectionData.append('courseId', createdCourseId);
-            subSectionData.append('videoFile', subSection.videoFile);
-            
-            await courseService.createSubSection(subSectionData, token);
-          }
-        }
-      }
+      await courseService.createSubSection(subSectionData, token);
       
-      toast({
-        title: "Sections & Lessons Created!",
-        description: "Now choose whether to publish or keep as draft."
-      });
+      setSections(prev => prev.map((s, idx) =>
+        idx === sectionIndex
+          ? { ...s, subSections: [...s.subSections, { ...currentSubSection, isCreated: true }] }
+          : s
+      ));
       
-      setCurrentStage(3);
+      setCurrentSubSection({ title: '', description: '', videoFile: null, videoPreview: '' });
+      toast({ title: "Lesson added successfully!" });
     } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to create sections",
+        description: "Failed to add lesson",
         variant: "destructive"
       });
     } finally {
@@ -257,23 +347,71 @@ const CreateCourse = () => {
     }
   };
 
-  // Stage 3: Publish/Draft Course
+  const removeSubSection = async (sectionIndex, subIndex) => {
+    const section = sections[sectionIndex];
+    const subSection = section.subSections[subIndex];
+    
+    if (subSection.isCreated && subSection.subSectionId) {
+      try {
+        setIsLoading(true);
+        await courseService.deleteSubSection({
+          subSectionId: subSection.subSectionId,
+          sectionId: section.sectionId,
+          courseId: courseId
+        }, token);
+        
+        setSections(prev => prev.map((s, idx) =>
+          idx === sectionIndex
+            ? { ...s, subSections: s.subSections.filter((_, i) => i !== subIndex) }
+            : s
+        ));
+        
+        toast({ title: "Lesson deleted successfully!" });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete lesson",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setSections(prev => prev.map((s, idx) =>
+        idx === sectionIndex
+          ? { ...s, subSections: s.subSections.filter((_, i) => i !== subIndex) }
+          : s
+      ));
+    }
+  };
+
+  // Stage 3: Update Course Status
   const handleStage3Submit = async () => {
+    // Check if status has changed
+    if (courseData.status === originalCourseData.status) {
+      toast({
+        title: "No Changes Detected",
+        description: "Course status unchanged. Returning to manage courses."
+      });
+      navigate('/manage-courses');
+      return;
+    }
+
     try {
       setIsLoading(true);
       
       const formData = new FormData();
-      formData.append('courseId', createdCourseId);
-      formData.append('status', finalStatus);
+      formData.append('courseId', courseId);
+      formData.append('status', courseData.status);
       
       await courseService.editCourse(formData, token);
       
       toast({
-        title: "Course Complete!",
-        description: `Course has been ${finalStatus === 'Published' ? 'published' : 'saved as draft'} successfully.`
+        title: "Course Updated!",
+        description: `Course has been ${courseData.status === 'Published' ? 'published' : 'saved as draft'} successfully.`
       });
       
-      navigate('/profile');
+      navigate('/manage-courses');
     } catch (error) {
       toast({
         title: "Error",
@@ -289,6 +427,20 @@ const CreateCourse = () => {
     return (currentStage / 3) * 100;
   };
 
+  if (isLoadingCourse) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-shell-darker via-shell-dark to-shell-dark">
+        <Navbar />
+        <div className="container mx-auto px-4 py-12 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+            <p>Loading course details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-shell-darker via-shell-dark to-shell-dark">
       <Navbar />
@@ -299,11 +451,11 @@ const CreateCourse = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-4">
               <button 
-                onClick={() => navigate('/dashboard')} 
+                onClick={() => navigate('/manage-courses')} 
                 className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Back to Dashboard</span>
+                <span>Back to Manage Courses</span>
               </button>
               <div className="text-sm text-muted-foreground">
                 Stage {currentStage} of 3
@@ -313,13 +465,13 @@ const CreateCourse = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className={currentStage >= 1 ? "text-primary font-medium" : "text-muted-foreground"}>
-                  1. Create Course
+                  1. Edit Course Details
                 </span>
                 <span className={currentStage >= 2 ? "text-primary font-medium" : "text-muted-foreground"}>
-                  2. Add Content
+                  2. Manage Content
                 </span>
                 <span className={currentStage >= 3 ? "text-primary font-medium" : "text-muted-foreground"}>
-                  3. Publish
+                  3. Update Status
                 </span>
               </div>
               <Progress value={getStageProgress()} className="h-2" />
@@ -331,16 +483,16 @@ const CreateCourse = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           
-          {/* Stage 1: Course Creation */}
+          {/* Stage 1: Course Details */}
           {currentStage === 1 && (
             <Card className="bg-card/80 backdrop-blur-lg border-border">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold">
                   <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    Stage 1: Create Your Course
+                    Stage 1: Edit Course Details
                   </span>
                 </CardTitle>
-                <p className="text-muted-foreground">Set up the basic information for your course</p>
+                <p className="text-muted-foreground">Update the basic information for your course</p>
               </CardHeader>
               <CardContent className="space-y-6">
                 
@@ -524,11 +676,11 @@ const CreateCourse = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Creating Course...
+                      Updating Course...
                     </>
                   ) : (
                     <>
-                      Create Course & Continue
+                      Update Course & Continue
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </>
                   )}
@@ -537,19 +689,19 @@ const CreateCourse = () => {
             </Card>
           )}
 
-          {/* Stage 2: Sections and Subsections */}
+          {/* Stage 2: Manage Content */}
           {currentStage === 2 && (
             <Card className="bg-card/80 backdrop-blur-lg border-border">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold">
                   <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    Stage 2: Add Course Content
+                    Stage 2: Manage Course Content
                   </span>
                 </CardTitle>
-                <p className="text-muted-foreground">Create sections and lessons for your course</p>
+                <p className="text-muted-foreground">Add, edit, or remove sections and lessons</p>
                 <div className="flex items-center justify-center space-x-2 mt-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-green-500">Course "{courseData.courseName}" created successfully</span>
+                  <span className="text-sm text-green-500">Course details updated successfully</span>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -569,7 +721,7 @@ const CreateCourse = () => {
                       type="button" 
                       variant="default" 
                       onClick={addSection}
-                      disabled={!currentSectionName.trim()}
+                      disabled={!currentSectionName.trim() || isLoading}
                     >
                       <Plus className="w-4 h-4" />
                     </Button>
@@ -581,8 +733,8 @@ const CreateCourse = () => {
                   {sections.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground">
                       <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <h3 className="text-lg font-medium mb-2">No sections created yet</h3>
-                      <p className="text-sm">Start by adding your first section above</p>
+                      <h3 className="text-lg font-medium mb-2">No sections yet</h3>
+                      <p className="text-sm">Add your first section above</p>
                     </div>
                   )}
                   
@@ -606,6 +758,7 @@ const CreateCourse = () => {
                           size="sm"
                           onClick={() => removeSection(sectionIndex)}
                           className="text-destructive hover:bg-destructive/10"
+                          disabled={isLoading}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -670,7 +823,7 @@ const CreateCourse = () => {
                             size="sm"
                             onClick={() => addSubSection(sectionIndex)}
                             className="w-full"
-                            disabled={!currentSubSection.title.trim() || !currentSubSection.videoFile}
+                            disabled={!currentSubSection.title.trim() || !currentSubSection.videoFile || isLoading}
                           >
                             <Plus className="w-4 h-4 mr-2" />
                             Add Lesson to Section
@@ -688,14 +841,19 @@ const CreateCourse = () => {
                                       Lesson {subIndex + 1}
                                     </Badge>
                                     <h4 className="font-medium">{sub.title}</h4>
+                                    {sub.isCreated && (
+                                      <Badge variant="outline" className="text-xs">
+                                        Saved
+                                      </Badge>
+                                    )}
                                   </div>
                                   {sub.description && (
                                     <p className="text-sm text-muted-foreground">{sub.description}</p>
                                   )}
-                                  {sub.videoFile && (
+                                  {sub.videoPreview && (
                                     <div className="flex items-center space-x-2 mt-2 p-2 bg-primary/10 rounded">
                                       <Video className="w-4 h-4 text-primary" />
-                                      <span className="text-xs text-primary">{sub.videoFile.name}</span>
+                                      <span className="text-xs text-primary">Video available</span>
                                     </div>
                                   )}
                                 </div>
@@ -705,6 +863,7 @@ const CreateCourse = () => {
                                   size="sm"
                                   onClick={() => removeSubSection(sectionIndex, subIndex)}
                                   className="text-destructive hover:bg-destructive/10"
+                                  disabled={isLoading}
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
@@ -724,49 +883,39 @@ const CreateCourse = () => {
                     className="flex-1"
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Course Info
+                    Back to Course Details
                   </Button>
                   <Button 
-                    onClick={handleStage2Submit}
+                    onClick={() => setCurrentStage(3)}
                     className="flex-1 bg-gradient-to-r from-primary to-accent"
-                    disabled={isLoading || sections.length === 0}
                   >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Creating Content...
-                      </>
-                    ) : (
-                      <>
-                        Create Content & Continue
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </>
-                    )}
+                    Continue to Status
+                    <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Stage 3: Publish/Draft */}
+          {/* Stage 3: Update Status */}
           {currentStage === 3 && (
             <Card className="bg-card/80 backdrop-blur-lg border-border">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold">
                   <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    Stage 3: Publish Your Course
+                    Stage 3: Update Course Status
                   </span>
                 </CardTitle>
-                <p className="text-muted-foreground">Choose whether to publish or save as draft</p>
+                <p className="text-muted-foreground">Choose the final status for your course</p>
                 <div className="flex flex-col items-center space-y-2 mt-4">
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-sm text-green-500">Course created successfully</span>
+                    <span className="text-sm text-green-500">Course details updated</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="w-5 h-5 text-green-500" />
                     <span className="text-sm text-green-500">
-                      {sections.length} sections and {sections.reduce((total, section) => total + section.subSections.length, 0)} lessons added
+                      {sections.length} sections with {sections.reduce((total, section) => total + section.subSections.length, 0)} lessons
                     </span>
                   </div>
                 </div>
@@ -813,8 +962,8 @@ const CreateCourse = () => {
                   <Label className="text-lg font-medium">Course Status</Label>
                   <div className="grid md:grid-cols-2 gap-4">
                     <Card 
-                      className={`cursor-pointer transition-all ${finalStatus === 'Draft' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
-                      onClick={() => setFinalStatus('Draft')}
+                      className={`cursor-pointer transition-all ${courseData.status === 'Draft' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                      onClick={() => setCourseData(prev => ({ ...prev, status: 'Draft' }))}
                     >
                       <CardContent className="p-6 text-center">
                         <Edit className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
@@ -826,8 +975,8 @@ const CreateCourse = () => {
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${finalStatus === 'Published' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
-                      onClick={() => setFinalStatus('Published')}
+                      className={`cursor-pointer transition-all ${courseData.status === 'Published' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                      onClick={() => setCourseData(prev => ({ ...prev, status: 'Published' }))}
                     >
                       <CardContent className="p-6 text-center">
                         <Send className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
@@ -857,11 +1006,11 @@ const CreateCourse = () => {
                     {isLoading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {finalStatus === 'Published' ? 'Publishing...' : 'Saving...'}
+                        {courseData.status === 'Published' ? 'Publishing...' : 'Saving...'}
                       </>
                     ) : (
                       <>
-                        {finalStatus === 'Published' ? 'Publish Course' : 'Save as Draft'}
+                        {courseData.status === 'Published' ? 'Publish Course' : 'Save as Draft'}
                         <CheckCircle className="w-4 h-4 ml-2" />
                       </>
                     )}
@@ -876,4 +1025,4 @@ const CreateCourse = () => {
   );
 };
 
-export default CreateCourse;
+export default EditCourse;

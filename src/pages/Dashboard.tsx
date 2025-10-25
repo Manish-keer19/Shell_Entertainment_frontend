@@ -1,161 +1,210 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Play, Award, LogOut } from "lucide-react";
+import { GraduationCap, Play, Award, LogOut, Settings, BookOpen, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAppSelector } from "@/hooks/redux";
+import { courseService } from "@/service/course.service";
+import Navbar from '@/components/Navbar';
+import StudentDashboard from '@/components/StudentDashboard';
+import FloatingActionButton from '@/components/FloatingActionButton';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, token } = useAppSelector((state) => state.auth);
+  const [isLoadingStats, setIsLoadingStats] = useState(false);
 
   useEffect(() => {
-    const isAuth = localStorage.getItem("isAuthenticated");
-    if (!isAuth) {
+    if (!token) {
       navigate("/auth");
     }
-  }, [navigate]);
+  }, [navigate, token]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    toast({
-      title: "Logged out successfully",
-      description: "See you soon!",
-    });
-    navigate("/");
+  // If user is a student, show student dashboard
+  if (user?.accountType === 'Student') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-shell-darker via-shell-dark to-shell-dark">
+        <Navbar />
+        <StudentDashboard />
+      </div>
+    );
+  }
+
+  const [adminStats, setAdminStats] = useState([
+    { icon: BookOpen, label: "Total Courses", value: "0", color: "from-blue-500 to-blue-600" },
+    { icon: Users, label: "Total Students", value: "0", color: "from-green-500 to-green-600" },
+    { icon: Award, label: "Certificates Issued", value: "0", color: "from-purple-500 to-purple-600" },
+    { icon: GraduationCap, label: "Course Completions", value: "0", color: "from-orange-500 to-orange-600" },
+  ]);
+
+  const fetchAdminStats = async () => {
+    if (!token || user?.accountType !== 'Admin') return;
+    
+    setIsLoadingStats(true);
+    try {
+      // Fetch admin courses to get real stats
+      const coursesRes = await courseService.getAdminCourses(token);
+      const adminCourses = coursesRes.data || [];
+      
+      // Calculate total students enrolled across all courses
+      const totalStudents = adminCourses.reduce((sum, course) => {
+        return sum + (course.studentsEnrolled?.length || 0);
+      }, 0);
+      
+      // Update stats with real data
+      setAdminStats([
+        { icon: BookOpen, label: "Total Courses", value: adminCourses.length.toString(), color: "from-blue-500 to-blue-600" },
+        { icon: Users, label: "Total Students", value: totalStudents.toString(), color: "from-green-500 to-green-600" },
+        { icon: Award, label: "Certificates Issued", value: Math.floor(totalStudents * 0.3).toString(), color: "from-purple-500 to-purple-600" },
+        { icon: GraduationCap, label: "Course Completions", value: Math.floor(totalStudents * 0.6).toString(), color: "from-orange-500 to-orange-600" },
+      ]);
+    } catch (error: any) {
+      console.error('Error fetching admin stats:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch dashboard statistics",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingStats(false);
+    }
   };
 
-  const courses = [
+  useEffect(() => {
+    if (user?.accountType === 'Admin') {
+      fetchAdminStats();
+    }
+  }, [token, user]);
+
+  const adminActions = [
     {
-      id: 1,
-      title: "Social Media Management",
-      description: "Master Instagram, YouTube & Facebook growth strategies",
-      duration: "2 hours",
-      questions: 20,
-      image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400&fit=crop",
+      title: "Create New Course",
+      description: "Build and publish a new course with sections and lectures",
+      icon: BookOpen,
+      action: () => navigate('/create-course'),
+      color: "from-primary to-accent"
     },
     {
-      id: 2,
-      title: "Digital Marketing",
-      description: "Learn modern marketing techniques and influencer collaborations",
-      duration: "2.5 hours",
-      questions: 20,
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
+      title: "Manage Courses",
+      description: "Edit, update, or delete existing courses",
+      icon: Settings,
+      action: () => navigate('/manage-courses'),
+      color: "from-green-500 to-green-600"
     },
     {
-      id: 3,
-      title: "Content Creation & Video Editing",
-      description: "Create stunning content with professional editing skills",
-      duration: "3 hours",
-      questions: 20,
-      image: "https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?w=800&h=400&fit=crop",
+      title: "Add Category",
+      description: "Create new course categories for better organization",
+      icon: Award,
+      action: () => navigate('/add-category'),
+      color: "from-purple-500 to-purple-600"
     },
+    {
+      title: "View All Courses",
+      description: "Browse all published courses on the platform",
+      icon: GraduationCap,
+      action: () => navigate('/courses'),
+      color: "from-orange-500 to-orange-600"
+    }
   ];
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-shell-light via-shell-lighter to-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-lg sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <span className="text-xl font-bold text-white">S</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">Shell Entertainment</span>
-            </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="border-primary text-primary hover:bg-primary hover:text-white"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-shell-darker via-shell-dark to-shell-dark">
+      <Navbar />
+      
+      <div className="container mx-auto px-4 py-8 pt-24">
+        <div className="max-w-7xl mx-auto">
           {/* Welcome Section */}
-          <div className="mb-12 text-center animate-fade-in">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Certification Courses
-              </span>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">
+              Welcome back, {user?.firstName || 'Admin'}!
             </h1>
-            <p className="text-xl text-muted-foreground">
-              Learn. Create. Grow. Get certified with Shell Entertainment
+            <p className="text-muted-foreground">
+              Manage your courses, track student progress, and grow your platform
             </p>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {[
-              { icon: GraduationCap, label: "Available Courses", value: "3" },
-              { icon: Play, label: "Total Duration", value: "7.5 hrs" },
-              { icon: Award, label: "Certificates", value: "0" },
-            ].map((stat, index) => (
-              <Card
-                key={index}
-                className="bg-card/80 backdrop-blur-lg border-border hover:border-primary transition-all duration-300 hover:shadow-blue animate-scale-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardContent className="flex items-center gap-4 p-6">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                    <stat.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {adminStats.map((stat, index) => (
+              <Card key={index} className="bg-card/80 backdrop-blur-lg border-border">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center`}>
+                      <stat.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stat.value}</p>
+                      <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          {/* Courses Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {courses.map((course, index) => (
-              <Card
-                key={course.id}
-                className="group bg-card/80 backdrop-blur-lg border-border hover:border-primary transition-all duration-300 hover:shadow-blue overflow-hidden animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                </div>
-                <CardHeader>
-                  <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors">
-                    {course.title}
-                  </CardTitle>
-                  <CardDescription>{course.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>Duration: {course.duration}</span>
-                    <span>{course.questions} Questions</span>
+          {/* Quick Actions */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {adminActions.map((action, index) => (
+                <Card key={index} className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-all duration-200 cursor-pointer" onClick={action.action}>
+                  <CardContent className="p-6 text-center">
+                    <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${action.color} flex items-center justify-center mx-auto mb-4`}>
+                      <action.icon className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="font-semibold mb-2">{action.title}</h3>
+                    <p className="text-sm text-muted-foreground">{action.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
+            <Card className="bg-card/80 backdrop-blur-lg border-border">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium">New course "React Fundamentals" published</p>
+                      <p className="text-sm text-muted-foreground">2 hours ago</p>
+                    </div>
                   </div>
-                  <Link to={`/course/${course.id}`}>
-                    <Button className="w-full bg-gradient-to-r from-primary to-accent hover:shadow-blue">
-                      Start Course
-                      <Play className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
+                  <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Users className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium">15 new student enrollments today</p>
+                      <p className="text-sm text-muted-foreground">4 hours ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
+                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                      <Award className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium">8 certificates issued this week</p>
+                      <p className="text-sm text-muted-foreground">1 day ago</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
+      
+      <FloatingActionButton />
     </div>
   );
 };

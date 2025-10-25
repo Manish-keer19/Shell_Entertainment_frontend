@@ -16,6 +16,12 @@ import CreateCourse from "./pages/Course/CreateCourse";
 import CreateCategory from "./pages/Course/CreateCatagory";
 import Profile from "./pages/Profile";
 import AuthLoader from "./components/AuthLoader";
+import CoursesList from "./pages/Course/CoursesList";
+import CourseDetail from "./pages/Course/CourseDetail";
+import AllCourses from "./pages/Course/AllCourses";
+import ViewCourse from "./pages/Course/ViewCourse";
+import EditCourse from "./pages/Course/EditCourse";
+import ManageCourses from "./pages/Course/ManageCourses";
 
 const queryClient = new QueryClient();
 
@@ -32,12 +38,24 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/courses" element={<Dashboard />} />
-                <Route path="/course/:courseId" element={<Course />} />
+                <Route path="/courses" element={<AllCourses />} />
                 <Route path="/certificate/:courseId" element={<Certificate />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/add-course" element={<CreateCourse/>}/>
-                <Route path="/add-catagory" element={<CreateCategory/>}/>
+                
+                {/* Course Management Routes */}
+                <Route path="/create-course" element={<CreateCourse/>}/>
+                <Route path="/edit-course/:courseId" element={<EditCourse/>}/>
+                <Route path="/manage-courses" element={<ManageCourses/>}/>
+                <Route path="/add-category" element={<CreateCategory/>}/>
+                
+                {/* Course Viewing Routes */}
+                <Route path="/courses-list" element={<CoursesList/>}/>
+                <Route path="/course/:id" element={<ViewCourse/>}/>
+                <Route path="/course-detail/:courseId" element={<CourseDetail/>}/>
+                
+                {/* Course Detail and Learning Routes */}
+                <Route path="/course-detail/:id" element={<CourseDetail/>}/>
+                <Route path="/course/:id/learn" element={<ViewCourse/>}/>
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

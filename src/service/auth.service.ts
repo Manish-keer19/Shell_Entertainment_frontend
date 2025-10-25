@@ -10,16 +10,23 @@ class AuthService {
     }
   }
 
-  public async signup(data: any) {
+  public async sendOTP(data: any) {
     try {
-      const res = await axiosInstance.post("/auth/register", data);
+      const res = await axiosInstance.post("/auth/sendotp", data);
       return res.data;
     } catch (error: any) {
       throw error;
     }
   }
 
- 
+  public async signup(data: any) {
+    try {
+      const res = await axiosInstance.post("/auth/signup", data);
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }
 
 export const authService = new AuthService();

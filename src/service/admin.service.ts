@@ -19,10 +19,11 @@ class AdminService {
 
   public async createCourse(data:any, token:string) {
     try {
-      const res = await axiosInstance.post(`/admin/createCourse}`,data,
+      const res = await axiosInstance.post(`/course/createCourse`,data,
          {
           headers: {
-            "Authorization": `Bearer ${token}`
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
           }
         }
       )
@@ -35,6 +36,177 @@ class AdminService {
   public async getAllCatagory(token:string) {
     try {
       const res = await axiosInstance.get(`/course/showAllCategories`,
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  public async createSection(data:any, token:string) {
+    try {
+      const res = await axiosInstance.post(`/course/addSection`, data,
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  
+  public async createSubSection(data:any, token:string) {
+    try {
+      const res = await axiosInstance.post(`/course/addSubSection`, data,
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async editCourse(data:any, token:string) {
+    try {
+      const res = await axiosInstance.post(`/course/editCourse`, data,
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async getAdminCourses(token:string) {
+    try {
+      const res = await axiosInstance.get(`/course/getAdminCourses`,
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async getAllCourses() {
+    try {
+      const res = await axiosInstance.get(`/course/getAllCourses`)
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async getCourseDetails(courseId:string) {
+    try {
+      const res = await axiosInstance.post(`/course/getCourseDetails`, {courseId})
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async getFullCourseDetails(courseId:string, token:string) {
+    try {
+      const res = await axiosInstance.post(`/course/getFullCourseDetails`, {courseId},
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async deleteCourse(courseId:string, token:string) {
+    try {
+      const res = await axiosInstance.delete(`/course/deleteCourse`, 
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          },
+          data: {courseId}
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async updateSection(data:any, token:string) {
+    try {
+      const res = await axiosInstance.post(`/course/updateSection`, data,
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async deleteSection(data:any, token:string) {
+    try {
+      const res = await axiosInstance.post(`/course/deleteSection`, data,
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async updateSubSection(data:any, token:string) {
+    try {
+      const res = await axiosInstance.post(`/course/updateSubSection`, data,
+         {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      )
+      return res.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async deleteSubSection(data:any, token:string) {
+    try {
+      const res = await axiosInstance.post(`/course/deleteSubSection`, data,
          {
           headers: {
             "Authorization": `Bearer ${token}`

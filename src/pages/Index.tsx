@@ -5,6 +5,7 @@ import Services from "@/components/Services";
 import Facilities from "@/components/Facilities";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import CoursesList from "./Course/CoursesList";
 
 const Index = () => {
   return (
@@ -13,6 +14,7 @@ const Index = () => {
       <Hero />
       <About />
       <Services />
+      <CoursesList/>
       <Facilities />
       <Contact />
       <Footer />

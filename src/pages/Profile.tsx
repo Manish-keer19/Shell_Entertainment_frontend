@@ -19,9 +19,9 @@ const Profile = () => {
   const isAdmin = user.accountType === 'Admin';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-shell-light via-shell-lighter to-background p-4">
+    <div className="min-h-screen bg-gradient-to-br from-shell-light via-shell-lighter to-background">
       <Navbar/>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-4 py-8 pt-24">
         {/* Header */}
         <div className="mb-8">
           <Card className="bg-card/80 backdrop-blur-lg border-border">
@@ -49,7 +49,7 @@ const Profile = () => {
         {isAdmin && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <Card className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate('/add-catagory')}>
+                  onClick={() => navigate('/add-category')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Plus className="w-5 h-5" />
@@ -62,7 +62,7 @@ const Profile = () => {
             </Card>
 
             <Card className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate('/add-course')}>
+                  onClick={() => navigate('/create-course')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5" />
@@ -80,13 +80,13 @@ const Profile = () => {
         {!isAdmin && (
           <div>
             <h2 className="text-2xl font-bold mb-6">My Courses</h2>
-            {user.courses.length > 0 ? (
+            {user.courses && user.courses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {user.courses.map((course: any, index: number) => (
-                  <Card key={index} className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow">
+                  <Card key={course._id || index} className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow">
                     <CardHeader>
-                      <CardTitle>{course.title || `Course ${index + 1}`}</CardTitle>
-                      <CardDescription>{course.description || "Course description"}</CardDescription>
+                      <CardTitle>{course.courseName || course.title || `Course ${index + 1}`}</CardTitle>
+                      <CardDescription>{course.courseDescription || course.description || "Course description"}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Button 

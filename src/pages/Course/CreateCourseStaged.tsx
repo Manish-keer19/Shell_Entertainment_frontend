@@ -14,7 +14,7 @@ import Navbar from '@/components/Navbar';
 import { courseService } from '@/service/course.service';
 import { useAppSelector } from '@/hooks/redux';
 
-const CreateCourse = () => {
+const CreateCourseStaged = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { token } = useAppSelector((state) => state.auth);
@@ -218,7 +218,7 @@ const CreateCourse = () => {
           courseId: createdCourseId
         }, token);
         
-        const sectionId = sectionRes.updatedCourse.courseContent[sectionRes.updatedCourse.courseContent.length - 1]._id || sectionRes.updatedCourse.courseContent[sectionRes.updatedCourse.courseContent.length - 1];
+        const sectionId = sectionRes.updatedCourse.courseContent[sectionRes.updatedCourse.courseContent.length - 1];
         
         // Update section with ID
         setSections(prev => prev.map((s, idx) => 
@@ -477,14 +477,14 @@ const CreateCourse = () => {
                 <div className="space-y-2">
                   <Label>Thumbnail Image</Label>
                   {!courseData.thumbnailImage ? (
-                    <div className="relative border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer group">
+                    <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer group">
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handleThumbnailChange}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       />
-                      <div className="space-y-2 pointer-events-none">
+                      <div className="space-y-2">
                         <div className="w-16 h-16 mx-auto bg-secondary rounded-full flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                           <Image className="w-8 h-8 text-muted-foreground group-hover:text-primary" />
                         </div>
@@ -633,14 +633,14 @@ const CreateCourse = () => {
                           <div className="space-y-2">
                             <Label className="text-xs text-muted-foreground">Video File (Required)</Label>
                             {!currentSubSection.videoPreview ? (
-                              <div className="relative border-2 border-dashed border-primary/30 rounded-lg p-3 text-center hover:border-primary transition-colors cursor-pointer group">
+                              <div className="border-2 border-dashed border-primary/30 rounded-lg p-3 text-center hover:border-primary transition-colors cursor-pointer group">
                                 <input
                                   type="file"
                                   accept="video/*"
                                   onChange={handleVideoChange}
-                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />
-                                <div className="space-y-1 pointer-events-none">
+                                <div className="space-y-1">
                                   <Video className="w-8 h-8 mx-auto text-primary" />
                                   <p className="text-xs font-medium">Upload Video</p>
                                 </div>
@@ -876,4 +876,4 @@ const CreateCourse = () => {
   );
 };
 
-export default CreateCourse;
+export default CreateCourseStaged;

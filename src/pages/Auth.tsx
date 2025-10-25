@@ -16,6 +16,8 @@ const Auth = () => {
   const { toast } = useToast();
   const dispatch = useAppDispatch();
   const { isLoading } = useAppSelector((state) => state.auth);
+  const [otpSent, setOtpSent] = useState(false);
+  const [signupData, setSignupData] = useState(null);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,13 +51,56 @@ const Auth = () => {
     }
   };
 
+  const handleSendOTP = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(loginStart());
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const data = {
+        fullNamme: formData.get('fullNamme'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        contactNumber: formData.get('contactNumber'),
+        accountType: formData.get('accountType') || 'Student'
+      };
+      
+      setSignupData(data);
+      const res = await authService.sendOTP({ email: data.email });
+      
+      if (res.success) {
+        setOtpSent(true);
+        toast({
+          title: "OTP sent",
+          description: "Please check your email for the OTP",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Failed to send OTP",
+        description: error.response?.data?.message || "Something went wrong. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      dispatch(loginFailure());
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(loginStart());
 
     try {
       const formData = new FormData(e.currentTarget);
-      const res = await authService.signup(formData);
+      const otpData = {
+        ...signupData,
+        otp: formData.get('otp')
+      };
+
+     console.log("otpdata is ",otpData)
+      
+      const res = await authService.signup(otpData);
+      
       
       if (res.success) {
         dispatch(loginSuccess({ user: res.user, token: res.token }));
@@ -132,59 +177,98 @@ const Auth = () => {
             </TabsContent>
 
             <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
-                  <Input
-                    id="signup-name"
-                    name="name"
-                    type="text"
-                    placeholder="John Doe"
-                    required
-                    className="bg-background border-border"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    name="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    required
-                    className="bg-background border-border"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-phone">Phone Number</Label>
-                  <Input
-                    id="signup-phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="+91 9876543210"
-                    required
-                    className="bg-background border-border"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    name="password"
-                    type="password"
-                    placeholder="••••••••"
-                    required
-                    className="bg-background border-border"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:shadow-blue"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Creating account..." : "Sign Up"}
-                </Button>
-              </form>
+              {!otpSent ? (
+                <form onSubmit={handleSendOTP} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullNamme">Full Name</Label>
+                    <Input
+                      id="fullNamme"
+                      name="fullNamme"
+                      type="text"
+                      placeholder="John Doe"
+                      required
+                      className="bg-background border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">Email</Label>
+                    <Input
+                      id="signup-email"
+                      name="email"
+                      type="email"
+                      placeholder="your@email.com"
+                      required
+                      className="bg-background border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contactNumber">Contact Number</Label>
+                    <Input
+                      id="contactNumber"
+                      name="contactNumber"
+                      type="tel"
+                      placeholder="+91 9876543210"
+                      required
+                      className="bg-background border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Password</Label>
+                    <Input
+                      id="signup-password"
+                      name="password"
+                      type="password"
+                      placeholder="••••••••"
+                      required
+                      className="bg-background border-border"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-primary to-accent hover:shadow-blue"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Sending OTP..." : "Send OTP"}
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="text-center mb-4">
+                    <p className="text-sm text-muted-foreground">
+                      Enter the OTP sent to {signupData?.email}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="otp">OTP</Label>
+                    <Input
+                      id="otp"
+                      name="otp"
+                      type="text"
+                      placeholder="Enter 6-digit OTP"
+                      maxLength={6}
+                      required
+                      className="bg-background border-border text-center text-lg tracking-widest"
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => setOtpSent(false)}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="flex-1 bg-gradient-to-r from-primary to-accent hover:shadow-blue"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Verifying..." : "Verify & Sign Up"}
+                    </Button>
+                  </div>
+                </form>
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>
