@@ -19,7 +19,7 @@ import {
   Globe,
   Loader2
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useCustomToast } from "@/components/ui/custom-toast";
 import Navbar from '@/components/Navbar';
 import { courseService } from '@/service/course.service';
 import { paymentService } from '@/service/payment.service';
@@ -29,7 +29,7 @@ import CourseEnrollment from '@/components/CourseEnrollment';
 const CourseDetail = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { showToast } = useCustomToast();
   const { token, user } = useAppSelector((state) => state.auth);
   
   const [course, setCourse] = useState(null);
@@ -68,11 +68,7 @@ const CourseDetail = () => {
         }
       }
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch course details",
-        variant: "destructive"
-      });
+      showToast('error', 'Failed to Load Course', 'Unable to fetch course details. Please refresh the page or try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -356,7 +352,11 @@ const CourseDetail = () => {
                   isEnrolled={isEnrolled}
                   onEnrollmentSuccess={() => {
                     setIsEnrolled(true);
-                    fetchCourseDetails();
+                    setProgress(0);
+                    // Refresh course data to get updated enrollment status
+                    setTimeout(() => {
+                      fetchCourseDetails();
+                    }, 1000);
                   }}
                 />
               </div>

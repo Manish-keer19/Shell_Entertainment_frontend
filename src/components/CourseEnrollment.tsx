@@ -12,7 +12,7 @@ import {
   Award,
   Loader2
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useCustomToast } from "@/components/ui/custom-toast";
 import { useAppSelector } from '@/hooks/redux';
 import { useNavigate } from 'react-router-dom';
 import { paymentService } from '@/service/payment.service';
@@ -34,7 +34,7 @@ const CourseEnrollment: React.FC<CourseEnrollmentProps> = ({
   isEnrolled, 
   onEnrollmentSuccess 
 }) => {
-  const { toast } = useToast();
+  const { showToast } = useCustomToast();
   const { token, user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const [enrolling, setEnrolling] = useState(false);
@@ -61,35 +61,38 @@ const CourseEnrollment: React.FC<CourseEnrollmentProps> = ({
       // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
-        toast({
-          title: "Error",
-          description: "Failed to load payment gateway",
-          variant: "destructive"
-        });
+        console.error("Failed to load Razorpay script");
+        showToast('error', 'Payment Gateway Error', 'Failed to load payment gateway. Please try again.');
         return;
       }
+      
+      console.log("Razorpay script loaded successfully");
 
       // Create order
+      console.log("Creating order for course:", course._id);
       const orderData = await paymentService.capturePayment([course._id], token);
+      console.log("Order creation response:", orderData);
 
       if (!orderData.success) {
-        toast({
-          title: "Error",
-          description: orderData.message || "Failed to create order",
-          variant: "destructive"
-        });
+        console.error("Order creation failed:", orderData);
+        showToast('error', 'Order Creation Failed', orderData.message || 'Failed to create order. Please try again.');
         return;
       }
 
       // Razorpay options
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_yQNkACsEOX8zkO";
+      console.log("Razorpay Key:", razorpayKey);
+      console.log("Order Data:", orderData);
+      
       const options = {
-        key: "rzp_test_yQNkACsEOX8zkO",
+        key: razorpayKey,
         amount: orderData.amount,
         currency: orderData.currency,
         name: "Shell Entertainment",
         description: `Enrollment for ${course.courseName}`,
         order_id: orderData.orderId,
         handler: async (response: any) => {
+          console.log("Razorpay response: in courseenrollment", response);
           try {
             // Verify payment
             const verifyData = await paymentService.verifyPayment({
@@ -107,24 +110,13 @@ const CourseEnrollment: React.FC<CourseEnrollmentProps> = ({
                 orderId: response.razorpay_order_id
               }, token);
 
-              toast({
-                title: "Payment Successful!",
-                description: "You have been enrolled in the course successfully!",
-              });
+              showToast('success', 'Payment Successful! 🎉', `You have been enrolled in ${course.courseName} successfully! Welcome aboard!`);
               onEnrollmentSuccess();
             } else {
-              toast({
-                title: "Payment Verification Failed",
-                description: "Please contact support",
-                variant: "destructive"
-              });
+              showToast('error', 'Payment Verification Failed', 'Payment could not be verified. Please contact support for assistance.');
             }
           } catch (error) {
-            toast({
-              title: "Error",
-              description: "Payment verification failed",
-              variant: "destructive"
-            });
+            showToast('error', 'Payment Verification Error', 'Payment verification failed. Please contact support if amount was deducted.');
           }
         },
         prefill: {
@@ -137,10 +129,7 @@ const CourseEnrollment: React.FC<CourseEnrollmentProps> = ({
         },
         modal: {
           ondismiss: () => {
-            toast({
-              title: "Payment Cancelled",
-              description: "You can try again anytime",
-            });
+            showToast('warning', 'Payment Cancelled', 'Payment was cancelled. You can try enrolling again anytime.');
           }
         }
       };
@@ -149,11 +138,8 @@ const CourseEnrollment: React.FC<CourseEnrollmentProps> = ({
       razorpay.open();
 
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to initiate payment",
-        variant: "destructive"
-      });
+      console.error("Payment initialization error:", error);
+      showToast('error', 'Payment Initialization Failed', 'Unable to start payment process. Please check your connection and try again.');
     } finally {
       setEnrolling(false);
     }
@@ -273,7 +259,8 @@ const CourseEnrollment: React.FC<CourseEnrollmentProps> = ({
           <div className="flex justify-center space-x-2">
             <Badge variant="outline" className="text-xs">UPI</Badge>
             <Badge variant="outline" className="text-xs">Cards</Badge>
-            <Badge variant="outline" className="text-xs">NetBanking</Badge>
+            <Badge variant="outline" className="text-xs">Net Banking</Badge>
+            <Badge variant="outline" className="text-xs">Wallets</Badge>
           </div>
         </div>
       </CardContent>
