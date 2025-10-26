@@ -141,8 +141,7 @@ class CourseService {
     try {
       const res = await axiosInstance.post(`/course/updateCourseProgress`, {
         courseId,
-        subSectionId,
-        userId: null // Will be extracted from token in backend
+        subSectionId
       }, {
         headers: {
           "Authorization": `Bearer ${token}`

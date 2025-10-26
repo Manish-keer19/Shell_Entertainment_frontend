@@ -22,6 +22,7 @@ import AllCourses from "./pages/Course/AllCourses";
 import ViewCourse from "./pages/Course/ViewCourse";
 import EditCourse from "./pages/Course/EditCourse";
 import ManageCourses from "./pages/Course/ManageCourses";
+import CourseLearning from "./pages/Course/CourseLearning";
 
 const queryClient = new QueryClient();
 
@@ -52,10 +53,7 @@ const App = () => (
                 <Route path="/courses-list" element={<CoursesList/>}/>
                 <Route path="/course/:id" element={<ViewCourse/>}/>
                 <Route path="/course-detail/:courseId" element={<CourseDetail/>}/>
-                
-                {/* Course Detail and Learning Routes */}
-                <Route path="/course-detail/:id" element={<CourseDetail/>}/>
-                <Route path="/course/:id/learn" element={<ViewCourse/>}/>
+                <Route path="/course-learning/:id" element={<CourseLearning/>}/>
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

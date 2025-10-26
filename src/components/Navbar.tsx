@@ -57,29 +57,6 @@ const Navbar = () => {
 
     return (
       <div className="flex items-center space-x-2">
-        {user?.accountType === 'Admin' && (
-          <>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/create-course')}
-              className="hidden md:flex"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Create Course
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/manage-courses')}
-              className="hidden md:flex"
-            >
-              <Settings className="w-4 h-4 mr-1" />
-              Manage
-            </Button>
-          </>
-        )}
-        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -116,23 +93,7 @@ const Navbar = () => {
               <BookOpen className="mr-2 h-4 w-4" />
               All Courses
             </DropdownMenuItem>
-            {user?.accountType === 'Admin' && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/create-course')}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Course
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/manage-courses')}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Manage Courses
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/add-category')}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Category
-                </DropdownMenuItem>
-              </>
-            )}
+
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
@@ -242,22 +203,7 @@ const Navbar = () => {
                       Profile
                     </Button>
                   </Link>
-                  {user?.accountType === 'Admin' && (
-                    <>
-                      <Link to="/create-course" onClick={() => setIsOpen(false)}>
-                        <Button variant="outline" className="w-full justify-start px-4 py-3">
-                          <Plus className="w-4 h-4 mr-2" />
-                          Create Course
-                        </Button>
-                      </Link>
-                      <Link to="/manage-courses" onClick={() => setIsOpen(false)}>
-                        <Button variant="outline" className="w-full justify-start px-4 py-3">
-                          <Settings className="w-4 h-4 mr-2" />
-                          Manage Courses
-                        </Button>
-                      </Link>
-                    </>
-                  )}
+
                   <Button
                     variant="destructive"
                     onClick={() => {

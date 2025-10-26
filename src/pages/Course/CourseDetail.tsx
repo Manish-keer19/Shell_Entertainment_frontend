@@ -48,7 +48,9 @@ const CourseDetail = () => {
       
       // Check if user is enrolled
       if (token && user) {
-        const isUserEnrolled = res.data[0]?.studentsEnrolled?.includes(user._id);
+        const courseData = res.data[0];
+        const isUserEnrolled = courseData?.studentsEnrolled?.includes(user._id) || 
+                              courseData?.studentsEnroled?.includes(user._id); // Handle typo in backend
         setIsEnrolled(isUserEnrolled);
         
         if (isUserEnrolled) {
@@ -56,11 +58,12 @@ const CourseDetail = () => {
           try {
             const progressRes = await courseService.getFullCourseDetails(courseId, token);
             const completedVideos = progressRes.data?.completedVideos || [];
-            const totalVideos = res.data[0]?.courseContent?.reduce((total, section) => 
+            const totalVideos = courseData?.courseContent?.reduce((total, section) => 
               total + (section.subSection?.length || 0), 0) || 0;
             setProgress(totalVideos > 0 ? (completedVideos.length / totalVideos) * 100 : 0);
           } catch (error) {
             console.log('Could not fetch progress:', error);
+            setProgress(0);
           }
         }
       }
@@ -184,6 +187,13 @@ const CourseDetail = () => {
                       <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
                     </div>
                     <Progress value={progress} className="h-2" />
+                    <Button 
+                      className="w-full mt-4 bg-green-600 hover:bg-green-700"
+                      onClick={() => navigate(`/course-learning/${course._id}`)}
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Continue Learning
+                    </Button>
                   </div>
                 )}
               </CardContent>
@@ -241,13 +251,13 @@ const CourseDetail = () => {
               <CardContent>
                 {isEnrolled ? (
                   <div className="space-y-4">
-                    {course.courseContent?.map((section, index) => (
+                    {course.courseContent?.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()).map((section, index) => (
                       <div key={section._id} className="border border-border rounded-lg p-4">
                         <h3 className="font-semibold mb-2">
                           Section {index + 1}: {section.sectionName}
                         </h3>
                         <div className="space-y-2">
-                          {section.subSection?.map((subSection) => (
+                          {section.subSection?.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()).map((subSection) => (
                             <div key={subSection._id} className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground cursor-pointer p-2 rounded hover:bg-muted/50 transition-colors"
                                  onClick={() => navigate(`/course/${course._id}?section=${section._id}&lesson=${subSection._id}`)}>
                               <Play className="w-3 h-3" />
@@ -258,18 +268,19 @@ const CourseDetail = () => {
                             </div>
                           ))}
                         </div>
+
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {course.courseContent?.slice(0, 2).map((section, index) => (
+                    {course.courseContent?.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()).slice(0, 2).map((section, index) => (
                       <div key={section._id} className="border border-border rounded-lg p-4 relative">
                         <h3 className="font-semibold mb-2">
                           Section {index + 1}: {section.sectionName}
                         </h3>
                         <div className="space-y-2">
-                          {section.subSection?.slice(0, 2).map((subSection) => (
+                          {section.subSection?.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()).slice(0, 2).map((subSection) => (
                             <div key={subSection._id} className="flex items-center space-x-2 text-sm text-muted-foreground">
                               <Play className="w-3 h-3" />
                               <span>{subSection.title}</span>
@@ -338,16 +349,18 @@ const CourseDetail = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Enrollment Card */}
-            <div className="enrollment-card">
-              <CourseEnrollment 
-                course={course}
-                isEnrolled={isEnrolled}
-                onEnrollmentSuccess={() => {
-                  setIsEnrolled(true);
-                  fetchCourseDetails();
-                }}
-              />
-            </div>
+            {!isEnrolled && (
+              <div className="enrollment-card">
+                <CourseEnrollment 
+                  course={course}
+                  isEnrolled={isEnrolled}
+                  onEnrollmentSuccess={() => {
+                    setIsEnrolled(true);
+                    fetchCourseDetails();
+                  }}
+                />
+              </div>
+            )}
 
             {/* Instructor Card */}
             <Card className="bg-card/80 backdrop-blur-lg border-border">

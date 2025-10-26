@@ -15,23 +15,6 @@ const Dashboard = () => {
   const { toast } = useToast();
   const { user, token } = useAppSelector((state) => state.auth);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
-
-  useEffect(() => {
-    if (!token) {
-      navigate("/auth");
-    }
-  }, [navigate, token]);
-
-  // If user is a student, show student dashboard
-  if (user?.accountType === 'Student') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-shell-darker via-shell-dark to-shell-dark">
-        <Navbar />
-        <StudentDashboard />
-      </div>
-    );
-  }
-
   const [adminStats, setAdminStats] = useState([
     { icon: BookOpen, label: "Total Courses", value: "0", color: "from-blue-500 to-blue-600" },
     { icon: Users, label: "Total Students", value: "0", color: "from-green-500 to-green-600" },
@@ -73,10 +56,26 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    if (!token) {
+      navigate("/auth");
+    }
+  }, [navigate, token]);
+
+  useEffect(() => {
     if (user?.accountType === 'Admin') {
       fetchAdminStats();
     }
   }, [token, user]);
+
+  // If user is a student, show student dashboard
+  if (user?.accountType === 'Student') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-shell-darker via-shell-dark to-shell-dark">
+        <Navbar />
+        <StudentDashboard />
+      </div>
+    );
+  }
 
   const adminActions = [
     {

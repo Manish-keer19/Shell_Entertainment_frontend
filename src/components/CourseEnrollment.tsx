@@ -177,7 +177,7 @@ const CourseEnrollment: React.FC<CourseEnrollmentProps> = ({
           
           <Button 
             className="w-full bg-green-600 hover:bg-green-700 mb-4"
-            onClick={() => navigate(`/course/${course._id}`)}
+            onClick={() => navigate(`/course-learning/${course._id}`)}
           >
             <CheckCircle className="w-4 h-4 mr-2" />
             Continue Learning

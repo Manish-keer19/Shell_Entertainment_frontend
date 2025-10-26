@@ -12,10 +12,12 @@ import CourseSearch from '@/components/CourseSearch';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import BackToTop from '@/components/BackToTop';
 import CourseFilters from '@/components/CourseFilters';
+import { useAppSelector } from '@/hooks/redux';
 
 const AllCourses = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAppSelector((state) => state.auth);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
@@ -304,21 +306,23 @@ const AllCourses = () => {
                         'View Details'
                       )}
                     </Button>
-                    <Button 
-                      size="sm" 
-                      className="bg-gradient-to-r from-primary to-accent"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEnrollCourse(course._id);
-                      }}
-                      disabled={enrollingCourseId === course._id}
-                    >
-                      {enrollingCourseId === course._id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        'Enroll'
-                      )}
-                    </Button>
+                    {!(course.studentsEnrolled?.includes(user?._id) || course.studentsEnroled?.includes(user?._id)) && (
+                      <Button 
+                        size="sm" 
+                        className="bg-gradient-to-r from-primary to-accent"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnrollCourse(course._id);
+                        }}
+                        disabled={enrollingCourseId === course._id}
+                      >
+                        {enrollingCourseId === course._id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          'Enroll'
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>

@@ -50,17 +50,72 @@ const StudentDashboard = () => {
       // First try to get from backend
       try {
         const enrolledRes = await studentService.getEnrolledCourses(token);
-        userEnrolledCourses = enrolledRes.data || [];
+        const enrolledData = enrolledRes.data;
+        
+        if (enrolledData && enrolledData.courses) {
+          // Fetch progress for each course
+          const coursesWithProgress = await Promise.all(
+            enrolledData.courses.map(async (course) => {
+              try {
+                const progressRes = await courseService.getFullCourseDetails(course._id, token);
+                const completedVideos = progressRes.data?.completedVideos || [];
+                const totalLectures = course.courseContent?.reduce((total, section) => 
+                  total + (section.subSection?.length || 0), 0) || 0;
+                const progress = totalLectures > 0 ? (completedVideos.length / totalLectures) * 100 : 0;
+                
+                return {
+                  ...course,
+                  progress: Math.round(progress),
+                  completedLectures: completedVideos.length,
+                  totalLectures,
+                  lastAccessed: new Date().toISOString()
+                };
+              } catch (error) {
+                return {
+                  ...course,
+                  progress: 0,
+                  completedLectures: 0,
+                  totalLectures: course.courseContent?.reduce((total, section) => 
+                    total + (section.subSection?.length || 0), 0) || 0,
+                  lastAccessed: new Date().toISOString()
+                };
+              }
+            })
+          );
+          userEnrolledCourses = coursesWithProgress;
+        }
       } catch (enrolledError) {
-        // If backend fails, check user object
+        console.error('Error fetching enrolled courses:', enrolledError);
+        // If backend fails, use user object with real progress
         if (user?.courses && user.courses.length > 0) {
-          userEnrolledCourses = user.courses.map(course => ({
-            ...course,
-            progress: Math.floor(Math.random() * 100), // This should come from courseProgress
-            lastAccessed: new Date().toISOString(),
-            completedLectures: Math.floor(Math.random() * 20),
-            totalLectures: 25
-          }));
+          const coursesWithProgressData = await Promise.all(
+            user.courses.map(async (course) => {
+              try {
+                const progressRes = await courseService.getFullCourseDetails(course._id, token);
+                const completedVideos = progressRes.data?.completedVideos || [];
+                const totalLectures = course.courseContent?.reduce((total, section) => 
+                  total + (section.subSection?.length || 0), 0) || 0;
+                const progress = totalLectures > 0 ? (completedVideos.length / totalLectures) * 100 : 0;
+                
+                return {
+                  ...course,
+                  progress: Math.round(progress),
+                  completedLectures: completedVideos.length,
+                  totalLectures,
+                  lastAccessed: new Date().toISOString()
+                };
+              } catch (error) {
+                return {
+                  ...course,
+                  progress: 0,
+                  completedLectures: 0,
+                  totalLectures: 0,
+                  lastAccessed: new Date().toISOString()
+                };
+              }
+            })
+          );
+          userEnrolledCourses = coursesWithProgressData;
         }
       }
       
@@ -255,7 +310,7 @@ const StudentDashboard = () => {
                   
                   <Button 
                     className="w-full"
-                    onClick={() => navigate(`/course/${course._id}`)}
+                    onClick={() => navigate(`/course-learning/${course._id}`)}
                   >
                     <Play className="w-4 h-4 mr-2" />
                     {course.progress === 0 ? 'Start Course' : 'Continue Learning'}

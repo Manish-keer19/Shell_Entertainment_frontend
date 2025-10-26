@@ -4,15 +4,76 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BookOpen, Plus, Settings, User } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { BookOpen, Plus, Settings, User, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { courseService } from "@/service/course.service";
+import { useState, useEffect } from "react";
 
 const Profile = () => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, token, isLoading: authLoading } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const [coursesWithProgress, setCoursesWithProgress] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+      return;
+    }
+    
+    const fetchCoursesProgress = async () => {
+      if (!user.courses || !token) return;
+      
+      setIsLoading(true);
+      try {
+        const coursesWithProgressData = await Promise.all(
+          user.courses.map(async (course) => {
+            try {
+              const progressRes = await courseService.getFullCourseDetails(course._id, token);
+              const completedVideos = progressRes.data?.completedVideos || [];
+              const totalLectures = course.courseContent?.reduce((total, section) => 
+                total + (section.subSection?.length || 0), 0) || 0;
+              const progress = totalLectures > 0 ? (completedVideos.length / totalLectures) * 100 : 0;
+              
+              return {
+                ...course,
+                progress: Math.round(progress),
+                completedLectures: completedVideos.length,
+                totalLectures
+              };
+            } catch (error) {
+              return {
+                ...course,
+                progress: 0,
+                completedLectures: 0,
+                totalLectures: 0
+              };
+            }
+          })
+        );
+        setCoursesWithProgress(coursesWithProgressData);
+      } catch (error) {
+        console.error('Error fetching progress:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user?.courses && token) {
+      fetchCoursesProgress();
+    }
+  }, [user, token, navigate]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-shell-light via-shell-lighter to-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
 
   if (!user) {
-    navigate('/auth');
     return null;
   }
 
@@ -45,53 +106,120 @@ const Profile = () => {
           </Card>
         </div>
 
-        {/* Admin Dashboard */}
-        {isAdmin && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate('/add-category')}>
+                  onClick={() => navigate('/dashboard')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Plus className="w-5 h-5" />
-                  Create Category
+                  <User className="w-5 h-5" />
+                  Dashboard
                 </CardTitle>
                 <CardDescription>
-                  Add new course categories to organize your content
+                  View your personalized dashboard
                 </CardDescription>
               </CardHeader>
             </Card>
 
             <Card className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate('/create-course')}>
+                  onClick={() => navigate('/courses')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5" />
-                  Create Course
+                  All Courses
                 </CardTitle>
                 <CardDescription>
-                  Create and publish new courses for students
+                  Browse and explore all available courses
                 </CardDescription>
               </CardHeader>
             </Card>
-          </div>
-        )}
 
-        {/* User Courses */}
+            {isAdmin && (
+              <>
+                <Card className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => navigate('/create-course')}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Plus className="w-5 h-5" />
+                      Create Course
+                    </CardTitle>
+                    <CardDescription>
+                      Create and publish new courses
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+
+                <Card className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => navigate('/manage-courses')}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Settings className="w-5 h-5" />
+                      Manage Courses
+                    </CardTitle>
+                    <CardDescription>
+                      Edit and manage existing courses
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+
+                <Card className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => navigate('/add-category')}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Plus className="w-5 h-5" />
+                      Add Category
+                    </CardTitle>
+                    <CardDescription>
+                      Add new course categories
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* My Courses */}
         {!isAdmin && (
           <div>
             <h2 className="text-2xl font-bold mb-6">My Courses</h2>
-            {user.courses && user.courses.length > 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin" />
+              </div>
+            ) : (user.courses && user.courses.length > 0) ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {user.courses.map((course: any, index: number) => (
+                {coursesWithProgress.map((course: any, index: number) => (
                   <Card key={course._id || index} className="bg-card/80 backdrop-blur-lg border-border hover:shadow-lg transition-shadow">
+                    {course.thumbnail && (
+                      <div className="aspect-video overflow-hidden rounded-t-lg">
+                        <img 
+                          src={course.thumbnail} 
+                          alt={course.courseName || `Course ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
                     <CardHeader>
                       <CardTitle>{course.courseName || course.title || `Course ${index + 1}`}</CardTitle>
                       <CardDescription>{course.courseDescription || course.description || "Course description"}</CardDescription>
                     </CardHeader>
                     <CardContent>
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-center justify-between text-sm">
+                          <span>Progress</span>
+                          <span className="font-medium">{course.progress || 0}%</span>
+                        </div>
+                        <Progress value={course.progress || 0} className="h-2" />
+                        <div className="text-xs text-muted-foreground">
+                          {course.completedLectures || 0} of {course.totalLectures || 0} lessons completed
+                        </div>
+                      </div>
                       <Button 
                         className="w-full"
-                        onClick={() => navigate(`/course/${course._id || course.id}`)}
+                        onClick={() => navigate(`/course-learning/${course._id || course.id}`)}
                       >
                         Continue Learning
                       </Button>
@@ -107,9 +235,6 @@ const Profile = () => {
                   <p className="text-muted-foreground mb-4">
                     You haven't enrolled in any courses yet. Browse our catalog to get started!
                   </p>
-                  <Button onClick={() => navigate('/courses')}>
-                    Browse Courses
-                  </Button>
                 </CardContent>
               </Card>
             )}
