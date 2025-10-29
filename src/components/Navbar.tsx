@@ -22,17 +22,15 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "About", path: "/#about" },
-    { name: "Services", path: "/#services" },
-    { name: "Facilities", path: "/#facilities" },
-    { name: "Certification", path: "/courses" },
-    { name: "Shell Music", path: "/#music" },
-    { name: "Contact", path: "/#contact" },
+    { name: "About", path: "/about" },
+    { name: "Services", path: "/services" },
+    { name: "Courses", path: "/all-courses" },
+    { name: "Contact", path: "/contact" },
   ];
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(path) || location.hash === path.split("#")[1];
+    return location.pathname === path;
   };
 
   const handleLogout = () => {

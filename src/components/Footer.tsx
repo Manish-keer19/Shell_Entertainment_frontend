@@ -1,91 +1,102 @@
-import { Instagram, Youtube, Facebook, Linkedin, Mail, Phone } from "lucide-react";
+import { Instagram, Youtube, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import Logo from "../assets/logo.jpg";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-background border-t border-border">
+    <footer className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
+        <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <span className="text-2xl font-bold text-white">S</span>
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+                <img src={Logo} alt="Shell Entertainment" className="w-10 h-10 rounded-full" />
               </div>
               <div>
-                <h3 className="font-bold text-foreground text-lg">Shell Entertainment</h3>
-                <p className="text-xs text-primary">MSME Verified</p>
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg">Shell Entertainment</h3>
+                <p className="text-xs text-blue-600 dark:text-blue-400">MSME Verified</p>
               </div>
             </div>
-            <p className="text-muted-foreground text-sm">
-              Creativity. Culture. Connection.
-            </p>
-            <p className="text-xs text-muted-foreground italic">
-              "The Shell That Holds Every Story."
+            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+              Shell Entertainment empowers creators, learners, and dreamers to grow through creativity and innovation.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Quick Links</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="/#about" className="hover:text-primary transition-colors">About Us</a></li>
-              <li><a href="/#services" className="hover:text-primary transition-colors">Services</a></li>
-              <li><a href="/#facilities" className="hover:text-primary transition-colors">Facilities</a></li>
-              <li><a href="/courses" className="hover:text-primary transition-colors">Certification</a></li>
-              <li><a href="/#contact" className="hover:text-primary transition-colors">Contact</a></li>
+            <h4 className="font-semibold text-gray-900 dark:text-white">Quick Links</h4>
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+              <li><a href="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a></li>
+              <li><a href="/about" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a></li>
+              <li><a href="/services" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Services</a></li>
+              <li><a href="/courses" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Courses</a></li>
+              <li><a href="/contact" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</a></li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div className="space-y-4">
+            <h4 className="font-semibold text-gray-900 dark:text-white">Services</h4>
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+              <li>Social Media Strategy</li>
+              <li>Digital Marketing</li>
+              <li>Graphic Designing</li>
+              <li>Influencer Management</li>
+              <li>Branding & Campaigns</li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Contact</h4>
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-primary" />
-                <a href="mailto:shellentertainment30@gmail.com" className="hover:text-primary transition-colors">
+            <h4 className="font-semibold text-gray-900 dark:text-white">Contact</h4>
+            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex items-start gap-2">
+                <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+                <a href="mailto:shellentertainment30@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   shellentertainment30@gmail.com
                 </a>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-primary" />
-                <a href="tel:+918003570024" className="hover:text-primary transition-colors">
+                <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <a href="tel:+918003570024" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   +91 8003570024
                 </a>
               </div>
-            </div>
-            
-            {/* Social Links */}
-            <div className="flex gap-3 pt-2">
-              {[
-                { icon: Instagram, url: "#" },
-                { icon: Youtube, url: "#" },
-                { icon: Facebook, url: "#" },
-                { icon: Linkedin, url: "#" },
-              ].map((social, index) => (
-                <a
-                  key={index}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-gradient-to-br hover:from-primary hover:to-accent transition-all group"
-                >
-                  <social.icon className="w-5 h-5 text-muted-foreground group-hover:text-white transition-colors" />
-                </a>
-              ))}
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+                <span>Mumbai, Maharashtra, India</span>
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Social Links */}
+        <div className="flex justify-center gap-4 mb-8">
+          {[
+            { icon: Instagram, url: "#", label: "Instagram" },
+            { icon: Youtube, url: "#", label: "YouTube" },
+            { icon: Linkedin, url: "#", label: "LinkedIn" },
+          ].map((social, index) => (
+            <a
+              key={index}
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gradient-to-br hover:from-blue-600 hover:to-purple-600 transition-all group"
+              aria-label={social.label}
+            >
+              <social.icon className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors" />
+            </a>
+          ))}
+        </div>
+
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-border">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground">
+        <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
+          <div className="text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               © {currentYear} Shell Entertainment. All Rights Reserved.
-            </p>
-            <p className="text-sm text-primary font-medium">
-              MSME Verified | Entertainment • Management • Marketing • Music • Studio
             </p>
           </div>
         </div>
@@ -97,6 +108,7 @@ const Footer = () => {
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all z-50 animate-float"
+        aria-label="Contact us on WhatsApp"
       >
         <svg
           viewBox="0 0 24 24"

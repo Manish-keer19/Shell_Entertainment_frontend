@@ -1,127 +1,85 @@
-import { Instagram, Youtube, Briefcase, Palette, TrendingUp, Music, Film } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Share2, TrendingUp, Palette, Users, Music, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const Services = () => {
   const services = [
     {
-      icon: Instagram,
-      title: "Social Media Growth",
-      tagline: "Your audience isn't just numbers — it's your tribe",
-      features: [
-        "Instagram Views, Likes, Comments",
-        "YouTube Growth & Monetization",
-        "Facebook Page Optimization",
-        "Organic Reach & Analytics",
-      ],
-      gradient: "from-pink-500 to-purple-500",
-    },
-    {
-      icon: Briefcase,
-      title: "Shell Management",
-      tagline: "Every event is a story — we make sure yours gets the standing ovation",
-      features: [
-        "Event Operations & Management",
-        "Post-Sales Coordination",
-        "On-Ground Execution",
-        "End-to-End Event Solutions",
-      ],
-      gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-      icon: Palette,
-      title: "Shell Studio",
-      tagline: "Design that feels good and tells your story",
-      features: [
-        "Poster & Banner Design",
-        "Festival & Brand Posters",
-        "Reels & Video Editing",
-        "Creative Visual Content",
-      ],
-      gradient: "from-orange-500 to-red-500",
+      icon: Share2,
+      title: "Social Media Strategy",
+      description: "Comprehensive social media planning and execution to grow your online presence.",
+      gradient: "from-blue-500 to-blue-600"
     },
     {
       icon: TrendingUp,
-      title: "Shell Marketing",
-      tagline: "Marketing with meaning — that's the Shell way",
-      features: [
-        "Influencer Collaborations",
-        "Brand Promotion Campaigns",
-        "Social Media Advertising",
-        "Strategic Growth Planning",
-      ],
-      gradient: "from-green-500 to-emerald-500",
+      title: "Digital Marketing",
+      description: "Data-driven marketing campaigns that deliver measurable results and ROI.",
+      gradient: "from-purple-500 to-purple-600"
+    },
+    {
+      icon: Palette,
+      title: "Graphic Designing",
+      description: "Creative visual solutions that capture your brand's essence and engage audiences.",
+      gradient: "from-blue-600 to-purple-500"
+    },
+    {
+      icon: Users,
+      title: "Influencer Management",
+      description: "Strategic influencer partnerships to amplify your brand reach and credibility.",
+      gradient: "from-purple-600 to-blue-500"
     },
     {
       icon: Music,
-      title: "Shell Music",
-      tagline: "Because every voice deserves to be heard",
-      features: [
-        "Launching New Artists",
-        "Music Video Production",
-        "YouTube Music Channel",
-        "Song Distribution",
-      ],
-      gradient: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: Film,
-      title: "Animation & Video",
-      tagline: "Every frame tells a story",
-      features: [
-        "Motion Graphics",
-        "Animated Explainer Videos",
-        "2D/3D Animation",
-        "Professional Video Production",
-      ],
-      gradient: "from-yellow-500 to-orange-500",
-    },
+      title: "Branding & Campaigns",
+      description: "Complete brand identity development and campaign management services.",
+      gradient: "from-blue-500 to-purple-600"
+    }
   ];
 
   return (
-    <section id="services" className="py-24 bg-card">
+    <section id="services" className="py-24 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Our Services
-            </span>
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto mb-6" />
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Comprehensive solutions to elevate your brand and reach
-          </p>
-        </div>
+        <div className="max-w-6xl mx-auto">
+          {/* Heading */}
+          <div className="text-center mb-16 animate-fade-in">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Our Core Services
+              </span>
+            </h2>
+          </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {services.map((service, index) => (
-            <Card
-              key={index}
-              className="group hover:shadow-blue transition-all duration-300 border-border hover:border-primary bg-background animate-scale-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <CardHeader>
-                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <service.icon className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl text-foreground group-hover:text-primary transition-colors">
-                  {service.title}
-                </CardTitle>
-                <CardDescription className="text-primary/80 italic font-medium">
-                  "{service.tagline}"
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {service.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start text-muted-foreground">
-                      <span className="text-primary mr-2">•</span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
+          {/* Services Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {services.map((service, index) => (
+              <Card
+                key={index}
+                className="group hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 bg-white dark:bg-gray-800 animate-fade-in-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <CardHeader className="pb-4">
+                  <div className={`w-16 h-16 rounded-xl bg-gradient-to-r ${service.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <service.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <CardTitle className="text-xl text-gray-800 dark:text-white group-hover:text-blue-600 transition-colors">
+                    {service.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+                    {service.description}
+                  </p>
+                  <Button 
+                    variant="ghost" 
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-500 p-0 h-auto font-medium group/btn"
+                  >
+                    Learn More
+                    <ArrowRight className="ml-1 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </section>

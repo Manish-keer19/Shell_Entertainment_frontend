@@ -8,6 +8,10 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Index from "./pages/Index";
+import AboutPage from "./pages/AboutPage";
+import ServicesPage from "./pages/ServicesPage";
+import CoursesPage from "./pages/CoursesPage";
+import ContactPage from "./pages/ContactPage";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Course from "./pages/Course";
@@ -24,6 +28,7 @@ import ViewCourse from "./pages/Course/ViewCourse";
 import EditCourse from "./pages/Course/EditCourse";
 import ManageCourses from "./pages/Course/ManageCourses";
 import CourseLearning from "./pages/Course/CourseLearning";
+import CourseSignupForm from "./pages/CourseSignupForm";
 
 const queryClient = new QueryClient();
 
@@ -39,9 +44,14 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/services" element={<ServicesPage />} />
+          
+                <Route path="/contact" element={<ContactPage />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/sign-up" element={<CourseSignupForm />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/courses" element={<AllCourses />} />
+                <Route path="/all-courses" element={<AllCourses />} />
                 <Route path="/certificate/:courseId" element={<Certificate />} />
                 <Route path="/profile" element={<Profile />} />
                 

@@ -65,8 +65,14 @@ export default {
       },
       boxShadow: {
         "blue": "var(--shadow-blue)",
+        "purple": "var(--shadow-purple)",
         "glow": "var(--shadow-glow)",
         "card": "var(--shadow-card)",
+      },
+      backgroundImage: {
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-hero': 'var(--gradient-hero)',
+        'gradient-card': 'var(--gradient-card)',
       },
       keyframes: {
         "accordion-down": {
