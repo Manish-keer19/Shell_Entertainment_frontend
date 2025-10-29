@@ -2,22 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tomato Font Faces */
-@font-face {
-  font-family: 'Tomato';
-  src: url('./assets/fonts/TomatoGrotesk/TomatoGrotesk-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Tomato';
-  src: url('./assets/fonts/TomatoGrotesk/TomatoGrotesk-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/* Import best UI/UX fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
@@ -121,7 +107,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Tomato', 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   html {
@@ -164,9 +150,13 @@ All colors MUST be HSL.
     @apply animate-pulse;
   }
 
-  /* Global font application */
-  h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
-    font-family: 'Tomato', 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+  /* Global font application - Best UI/UX fonts */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  p, span, div, a, button, input, textarea, label {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   /* Mobile-first responsive text utilities */

@@ -15,19 +15,19 @@ const Footer = () => {
                 <img src={Logo} alt="Shell Entertainment" className="w-10 h-10 rounded-full" />
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white text-mobile-base md:text-lg font-tomato">Shell Entertainment</h3>
-                <p className="text-mobile-xs md:text-xs text-blue-600 dark:text-blue-400 font-tomato">MSME Verified</p>
+                <h3 className="font-bold text-gray-900 dark:text-white text-mobile-base md:text-lg font-heading">Shell Entertainment</h3>
+                <p className="text-mobile-xs md:text-xs text-blue-600 dark:text-blue-400 font-body">MSME Verified</p>
               </div>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 text-mobile-xs md:text-sm leading-relaxed font-tomato">
+            <p className="text-gray-600 dark:text-gray-300 text-mobile-xs md:text-sm leading-relaxed font-body">
               Shell Entertainment empowers creators, learners, and dreamers to grow through creativity and innovation.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900 dark:text-white text-mobile-sm md:text-base font-tomato">Quick Links</h4>
-            <ul className="space-y-2 text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-tomato">
+            <h4 className="font-semibold text-gray-900 dark:text-white text-mobile-sm md:text-base font-heading">Quick Links</h4>
+            <ul className="space-y-2 text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-body">
               <li><a href="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a></li>
               <li><a href="/about" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a></li>
               <li><a href="/services" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Services</a></li>
@@ -38,8 +38,8 @@ const Footer = () => {
 
           {/* Services */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900 dark:text-white text-mobile-sm md:text-base font-tomato">Services</h4>
-            <ul className="space-y-2 text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-tomato">
+            <h4 className="font-semibold text-gray-900 dark:text-white text-mobile-sm md:text-base font-heading">Services</h4>
+            <ul className="space-y-2 text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-body">
               <li>Social Media Strategy</li>
               <li>Digital Marketing</li>
               <li>Graphic Designing</li>
@@ -50,8 +50,8 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900 dark:text-white text-mobile-sm md:text-base font-tomato">Contact</h4>
-            <div className="space-y-3 text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-tomato">
+            <h4 className="font-semibold text-gray-900 dark:text-white text-mobile-sm md:text-base font-heading">Contact</h4>
+            <div className="space-y-3 text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-body">
               <div className="flex items-start gap-2">
                 <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
                 <a href="mailto:shellentertainment30@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
@@ -95,7 +95,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
           <div className="text-center">
-            <p className="text-mobile-xs md:text-sm text-gray-500 dark:text-gray-400 font-tomato">
+            <p className="text-mobile-xs md:text-sm text-gray-500 dark:text-gray-400 font-body">
               © {currentYear} Shell Entertainment. All Rights Reserved.
             </p>
           </div>

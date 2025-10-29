@@ -76,8 +76,9 @@ export default {
         'gradient-card': 'var(--gradient-card)',
       },
       fontFamily: {
-        'tomato': ['Tomato', 'Inter', 'Poppins', 'system-ui', '-apple-system', 'sans-serif'],
-        'sans': ['Tomato', 'Inter', 'Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+        'sans': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        'heading': ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        'body': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],

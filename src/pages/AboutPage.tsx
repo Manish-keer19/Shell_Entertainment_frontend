@@ -74,12 +74,12 @@ const AboutPage = () => {
       <section className="pt-32 pb-16 bg-gradient-to-br from-blue-50 via-purple-50 to-white dark:from-gray-900 dark:via-blue-900 dark:to-gray-800">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-mobile-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-tomato">
+            <h1 className="text-mobile-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-heading">
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                 Our Story
               </span>
             </h1>
-            <p className="text-mobile-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto font-tomato">
+            <p className="text-mobile-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto font-body">
               Shell Entertainment was born from a vision to bridge the gap between creativity and technology, 
               empowering creators, learners, and dreamers to achieve their full potential through innovative 
               digital solutions.
@@ -95,15 +95,15 @@ const AboutPage = () => {
             <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-mobile-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-4 font-tomato">Our Mission</h2>
-                  <p className="text-mobile-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-tomato">
+                  <h2 className="text-mobile-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-4 font-heading">Our Mission</h2>
+                  <p className="text-mobile-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-body">
                     To empower creators, learners, and dreamers by providing innovative digital solutions, 
                     comprehensive learning programs, and a supportive community that fosters growth and creativity.
                   </p>
                 </div>
                 <div>
-                  <h2 className="text-mobile-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-4 font-tomato">Our Vision</h2>
-                  <p className="text-mobile-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-tomato">
+                  <h2 className="text-mobile-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-4 font-heading">Our Vision</h2>
+                  <p className="text-mobile-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-body">
                     To become India's leading creative entertainment company, known for transforming ideas into 
                     impactful digital experiences and nurturing the next generation of creative professionals.
                   </p>
@@ -124,7 +124,7 @@ const AboutPage = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-mobile-3xl md:text-4xl font-bold mb-6 font-tomato">
+              <h2 className="text-mobile-3xl md:text-4xl font-bold mb-6 font-heading">
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                   Our Journey
                 </span>
@@ -138,9 +138,9 @@ const AboutPage = () => {
                     <Calendar className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <div className="text-mobile-sm md:text-sm font-medium text-blue-600 dark:text-blue-400 mb-1 font-tomato">{milestone.year}</div>
-                    <h3 className="text-mobile-lg md:text-xl font-bold text-gray-800 dark:text-white mb-2 font-tomato">{milestone.title}</h3>
-                    <p className="text-mobile-sm md:text-base text-gray-600 dark:text-gray-300 font-tomato">{milestone.description}</p>
+                    <div className="text-mobile-sm md:text-sm font-medium text-blue-600 dark:text-blue-400 mb-1 font-body">{milestone.year}</div>
+                    <h3 className="text-mobile-lg md:text-xl font-bold text-gray-800 dark:text-white mb-2 font-heading">{milestone.title}</h3>
+                    <p className="text-mobile-sm md:text-base text-gray-600 dark:text-gray-300 font-body">{milestone.description}</p>
                   </div>
                 </div>
               ))}
@@ -154,7 +154,7 @@ const AboutPage = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-mobile-3xl md:text-4xl font-bold mb-6 font-tomato">
+              <h2 className="text-mobile-3xl md:text-4xl font-bold mb-6 font-heading">
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                   Meet Our Team
                 </span>
@@ -172,9 +172,9 @@ const AboutPage = () => {
                     />
                     <div className="absolute inset-0 w-32 h-32 rounded-full mx-auto bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                  <h3 className="text-mobile-base md:text-lg font-bold text-gray-800 dark:text-white mb-1 font-tomato">{member.name}</h3>
-                  <p className="text-mobile-sm md:text-base text-blue-600 dark:text-blue-400 font-medium mb-2 font-tomato">{member.role}</p>
-                  <p className="text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-tomato">{member.description}</p>
+                  <h3 className="text-mobile-base md:text-lg font-bold text-gray-800 dark:text-white mb-1 font-heading">{member.name}</h3>
+                  <p className="text-mobile-sm md:text-base text-blue-600 dark:text-blue-400 font-medium mb-2 font-body">{member.role}</p>
+                  <p className="text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-body">{member.description}</p>
                 </div>
               ))}
             </div>
@@ -186,10 +186,10 @@ const AboutPage = () => {
       <section className="py-24 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-mobile-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 font-tomato">
+            <h2 className="text-mobile-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 font-heading">
               Be Part of Our Story
             </h2>
-            <p className="text-mobile-base md:text-xl text-blue-100 mb-8 max-w-2xl mx-auto font-tomato">
+            <p className="text-mobile-base md:text-xl text-blue-100 mb-8 max-w-2xl mx-auto font-body">
               Join Shell Entertainment and become part of India's fastest growing creative community. 
               Let's create something amazing together.
             </p>

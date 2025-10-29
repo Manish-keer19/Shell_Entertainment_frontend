@@ -113,10 +113,10 @@ const Navbar = () => {
               <img src={Logo} className=" w-full h-full rounded-full"/>
             </div>
             <div className="flex flex-col">
-              <span className="text-mobile-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors font-tomato">
+              <span className="text-mobile-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors font-heading">
                 Shell Entertainment
               </span>
-              <span className="text-mobile-xs md:text-xs text-muted-foreground font-tomato">MSME Verified</span>
+              <span className="text-mobile-xs md:text-xs text-muted-foreground font-body">MSME Verified</span>
             </div>
           </Link>
 
@@ -126,7 +126,7 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`px-4 py-2 rounded-lg text-mobile-sm md:text-sm font-medium transition-all duration-300 font-tomato ${
+                className={`px-4 py-2 rounded-lg text-mobile-sm md:text-sm font-medium transition-all duration-300 font-body ${
                   isActive(item.path)
                     ? "text-primary bg-secondary"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
@@ -164,7 +164,7 @@ const Navbar = () => {
                   key={item.name}
                   to={item.path}
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-3 rounded-lg text-mobile-sm md:text-sm font-medium transition-all font-tomato ${
+                  className={`px-4 py-3 rounded-lg text-mobile-sm md:text-sm font-medium transition-all font-body ${
                     isActive(item.path)
                       ? "text-primary bg-secondary"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
