@@ -18,11 +18,11 @@ const Hero = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-blue-200 dark:border-blue-400 text-sm text-blue-600 dark:text-blue-400 shadow-lg animate-scale-in">
             <Sparkles className="w-4 h-4" />
-            <span className="font-medium">Entertainment Reimagined for the Future</span>
+            <span className="font-medium font-tomato">Entertainment Reimagined for the Future</span>
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
+          <h1 className="text-mobile-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight font-tomato">
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
               Entertainment Reimagined
             </span>
@@ -31,7 +31,7 @@ const Hero = () => {
           </h1>
 
           {/* Subheading */}
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-mobile-lg md:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed font-tomato">
             Shell Entertainment empowers creators, learners, and dreamers to grow through creativity.
             Where innovation meets imagination.
           </p>
@@ -41,7 +41,7 @@ const Hero = () => {
             <Link to="/#services">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg px-8 py-6 group shadow-lg hover:shadow-blue transition-all duration-300"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-mobile-base md:text-lg px-6 md:px-8 py-4 md:py-6 group shadow-lg hover:shadow-blue transition-all duration-300 font-tomato"
               >
                 Explore Shell
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -51,7 +51,7 @@ const Hero = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white text-lg px-8 py-6 transition-all duration-300"
+                className="border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white text-mobile-base md:text-lg px-6 md:px-8 py-4 md:py-6 transition-all duration-300 font-tomato"
               >
                 Join Community
               </Button>
@@ -85,10 +85,10 @@ const Hero = () => {
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+                <h3 className="text-mobile-base md:text-lg font-semibold text-gray-800 dark:text-white mb-2 font-tomato">
                   {feature.title}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-mobile-xs md:text-sm text-gray-600 dark:text-gray-300 font-tomato">
                   {feature.description}
                 </p>
               </div>

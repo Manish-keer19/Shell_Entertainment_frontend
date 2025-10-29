@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tomato Font Faces */
+@font-face {
+  font-family: 'Tomato';
+  src: url('./assets/fonts/TomatoGrotesk/TomatoGrotesk-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tomato';
+  src: url('./assets/fonts/TomatoGrotesk/TomatoGrotesk-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
@@ -104,7 +121,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+    font-family: 'Tomato', 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
   }
 
   html {
@@ -145,5 +162,51 @@ All colors MUST be HSL.
   /* Loading states */
   .loading {
     @apply animate-pulse;
+  }
+
+  /* Global font application */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
+    font-family: 'Tomato', 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Mobile-first responsive text utilities */
+  .text-responsive-xs {
+    @apply text-mobile-xs md:text-xs;
+  }
+  
+  .text-responsive-sm {
+    @apply text-mobile-sm md:text-sm;
+  }
+  
+  .text-responsive-base {
+    @apply text-mobile-base md:text-base;
+  }
+  
+  .text-responsive-lg {
+    @apply text-mobile-lg md:text-lg;
+  }
+  
+  .text-responsive-xl {
+    @apply text-mobile-xl md:text-xl;
+  }
+  
+  .text-responsive-2xl {
+    @apply text-mobile-2xl md:text-2xl;
+  }
+  
+  .text-responsive-3xl {
+    @apply text-mobile-3xl md:text-3xl;
+  }
+  
+  .text-responsive-4xl {
+    @apply text-mobile-4xl md:text-4xl;
+  }
+  
+  .text-responsive-5xl {
+    @apply text-mobile-5xl md:text-5xl;
+  }
+  
+  .text-responsive-6xl {
+    @apply text-mobile-6xl md:text-6xl;
   }
 }
